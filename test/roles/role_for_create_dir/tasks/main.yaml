@@ -1,0 +1,4 @@
+---
+- file: 
+      path: /home/irina/ansible_test.txt
+      state: touch
