@@ -1,1 +1,1 @@
-ansible-galaxy install geerlingguy.nginx geerlingguy.mysql geerlingguy.php ginigangadharan.wordpress
+ansible-galaxy install geerlingguy.nginx geerlingguy.mysql geerlingguy.php oefenweb.wordpress
