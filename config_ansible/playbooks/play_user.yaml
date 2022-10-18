@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  vars_files:
+    - inventory/pass.yaml
+  roles: 
+    - { role: role_for_user, tags: [user, directory]}
+

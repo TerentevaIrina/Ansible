@@ -1,0 +1,39 @@
+---
+- name: create user_1 
+  user:
+    name: user_test_1
+    password: "{{user_test_1}}"
+  tags: user
+
+- name: create user_2
+  user:
+    name: user_test_2
+    password: "{{user_test_2}}"
+  tags: user
+  
+  
+- name: create directory_1
+  file:
+    path: /home/user_test_1/user_test_1.txt
+    state: touch
+  tags: directory
+
+- name: create directory_2
+  file:
+    path: /home/user_test_2/user_test_2.txt
+    state: touch
+  tags: directory
+  
+  
+- name: get files
+  get_url:
+    url=https://github.com/ansible/ansible?ysclid=l905tckd1v801725320/README.rst
+    dest=/home/user_test_1/ans_test
+  tags: get_url
+
+
+- name: get files
+  get_url:
+    url=https://github.com/ansible/ansible?ysclid=l905tckd1v801725320/README.rst
+    dest=/home/user_test_2/ans_test
+  tags: get_url
