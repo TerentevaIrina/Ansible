@@ -1,0 +1,36 @@
+---
+- name: create users
+  user:
+    name: "{{ name1 }}"
+    password: "{{ password1 }}"
+    groups: "{{ groups1 }}"
+    name: "name2"
+    password: "{{ password2 }}"
+    groups: "{{groups2}}"
+  tags: user
+
+- name: create directory
+  file:
+    path: "{{ path1 }}"
+    state: touch
+    path: "{{ path2 }}"
+    state: touch
+  tags: directory
+
+- name: Check that the somefile.conf exists
+  stat:
+    path: home/user_1_1/user.txt
+  register: stat_result_1
+  stat:
+    path: home/user_2_2/user_test_2.txt
+  register: stat_result_2
+  tags: file
+
+- name: Create the file, 
+  include_tasks: create_user_1_1.yaml
+  when: stat_result_1.stat.exists == True
+  include_tasks: create_user_2_2.yaml
+  when: stat_result_2.stat.exists == True
+
+
+
