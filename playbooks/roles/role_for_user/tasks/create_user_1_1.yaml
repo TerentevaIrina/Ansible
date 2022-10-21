@@ -1,0 +1,4 @@
+- name: Create file for user_1_1
+  file:
+    path: /home/user_1_1/test
+    state: touch
