@@ -31,3 +31,9 @@
   debug:
     msg: "{{ result }}"
   tags: nginx
+
+- name: get files
+  get_url:
+    url=http://192.168.1.200/
+    dest=/home/irina/nginx_test
+  tags: nginx
