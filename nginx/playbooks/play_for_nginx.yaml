@@ -1,0 +1,10 @@
+---
+- name: Nginx to use
+  hosts: nginx
+  gather_facts: true
+  become: true
+  remote_user: irina
+  vars_files:
+    roles/nginx/vars/main.yaml
+  roles:
+    - { role: nginx, tags: [nginx]}
