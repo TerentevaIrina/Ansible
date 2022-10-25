@@ -1,0 +1,3 @@
+worker_processes: 5
+worker_connections: 4096
+port: 80
