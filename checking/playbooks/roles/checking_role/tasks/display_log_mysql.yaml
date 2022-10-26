@@ -1,0 +1,7 @@
+---
+- name: Display log mysql
+  shell:
+    cmd: tail -n 50  /var/log/mysql/error.log
+  register: tail
+- debug: var=tail.stdout_lines
+

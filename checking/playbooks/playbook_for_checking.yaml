@@ -1,0 +1,21 @@
+---
+- name: Checking service nginx
+  hosts: nginx
+  gather_facts: true
+  become: true
+  remote_user: irina
+  vars_files:
+    roles/checking_role/vars/main.yaml
+  roles:
+    - { role: checking_role, tags: [nginx]}
+
+- name: Checking service mysql
+  hosts: mysql
+  gather_facts: true
+  become: true
+  remote_user: irina
+  vars_files:
+    roles/checking_role/vars/main.yaml
+  roles:
+    - { role: checking_role, tags: [mysql]}
+
