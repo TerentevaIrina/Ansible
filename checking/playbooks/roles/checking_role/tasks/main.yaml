@@ -1,0 +1,65 @@
+---
+- name: Checking nginx port
+  wait_for:
+    host:  nginx 
+    port: "{{ nginx_port }}"
+    delay: 10
+- debug: msg=ok
+  tags: nginx
+
+- name: Checking mysql port
+  wait_for:
+    host: mysql 
+    port: "{{ mysql_port }}"
+    delay: 10
+- debug: msg=ok
+  tags: mysql
+
+- name: Checking nginx get files
+  get_url:
+    url: http://192.168.1.200/file
+    dest: home/irina/check_nginx_test
+    checksum: md5:http://192.168.1.200/file 
+  tags: nginx
+
+
+- name: create health checking nginx
+  uri:
+    url: "http://{{ nginx }}:{{ nginx_port }}/health"
+    return_content: yes
+    status_code: 200
+  register: nginx_out
+  tags: nginx
+                                
+- name: Print nginx_health
+  set_fact:   
+    nginx_health: "{{ nginx_out.content | from_json }}"
+- debug:
+    var: nginx_health
+  tags: nginx
+                                
+- name: display log nginx
+  include_tasks: display_log_nginx.yaml
+  when: nginx_health.db | default(faulse) | bool
+  tags: nginx
+          
+          
+- name: create health checking mysql
+  uri:
+    url: "http://{{ mysql }}:{{ mysql_port }}/health"
+    return_content: yes
+    status_code: 200
+  register: mysql_out
+  tags: mysql
+                                
+- name: Print mysql_health
+  set_fact:   
+    mysql_health: "{{ mysql_out.content | from_json }}"
+- debug:
+    var: mysql_health
+  tags: mysql
+                                
+- name: display log mysql
+  include_tasks: display_log_mysql.yaml
+  when: mysql_health.db | default(faulse) | bool
+  tags: mysql
