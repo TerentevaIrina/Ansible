@@ -1,0 +1,79 @@
+- name: Open ports
+  protocol: Tcp
+  destination_port_range: 
+    - 15672
+    - 5672
+  direction: Inbound
+
+
+- name: add keys
+  shell: apt install curl gnupg -y
+  shell: curl -1sLf "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA" | sudo gpg --dearmor | sudo tee /usr/share/keyrings/com.rabbitmq.team.gpg > /dev/null
+  shell: curl -1sLf https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/gpg.E495BB49CC4BBE5B.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.gpg > /dev/null
+  shell: curl -1sLf https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/gpg.9F4587F226208342.key | sudo gpg --dearmor | sudo tee /usr/share/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.gpg > /dev/null
+
+- name: add repo
+  apt:
+    name: apt-transport-https
+	state: present
+	update_cache: yes
+	
+- name: Creating a file with repo
+  copy:
+    dest: /etc/apt/sources.list.d/rabbitmq.lis
+    content: |
+         deb [signed-by=/usr/share/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu bionic main
+         deb-src [signed-by=/usr/share/keyrings/io.cloudsmith.rabbitmq.E495BB49CC4BBE5B.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-erlang/deb/ubuntu bionic main
+         deb [signed-by=/usr/share/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/ubuntu bionic main
+         deb-src [signed-by=/usr/share/keyrings/io.cloudsmith.rabbitmq.9F4587F226208342.gpg] https://dl.cloudsmith.io/public/rabbitmq/rabbitmq-server/deb/ubuntu bionic main
+		 
+
+- name: update repo
+  ansible.builtin.shell: apt update -y
+  
+- name: set erlang
+  shell: apt install -y erlang-base \
+  shell: erlang-asn1 erlang-crypto erlang-eldap erlang-ftp erlang-inets \
+  shell: erlang-mnesia erlang-os-mon erlang-parsetools erlang-public-key \
+  shell: erlang-runtime-tools erlang-snmp erlang-ssl \
+  shell: erlang-syntax-tools erlang-tftp erlang-tools erlang-xmer
+  
+- name: fix unmet dependencies
+  shell: apt-get -f install
+
+- name: install rabbitmq
+  apt: 
+    name: rabbitmq-server
+    state: present
+    update_cache: yes
+	
+- name: enable rabbitmq plugins
+  rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+  notify:
+    - restart rabbitmq
+
+- name: add rabbitmq users admin
+  rabbitmq_user:
+    user: admin
+    password: superpassword
+    vhost: /
+    tags: administrator
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+
+- name: Creates directory for logs
+  file:
+    path: /var/log/rabbitmq
+    state: directory
+	
+- name: Configure rabbitmq
+  template:
+    src: rabbitmq.conf.j2
+    dest: /etc/rabbitmq/rabbitmq.conf
+
+  
+  

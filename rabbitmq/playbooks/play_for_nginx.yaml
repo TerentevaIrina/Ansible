@@ -1,0 +1,8 @@
+---
+- name: Rabbitmq install
+  hosts: rabbitmq
+  gather_facts: true
+  become: true
+  remote_user: irina
+  roles:
+    - rabbitmq
