@@ -1,0 +1,5 @@
+- name: Ya_cloud
+  hosts: ya_cloud
+  vars_files:
+    roles/ya/vars/main.yaml
+  roles: ya

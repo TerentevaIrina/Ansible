@@ -1,0 +1,43 @@
+- name: Create vm
+  ycc_vm:
+    token: {{ my_token }}
+    name: my_vm
+    login: irina_ya_test
+    public_ssh_key: {{ key }}
+    hostname: test
+    zone_id: ru-central1-a
+    folder_id: r1gagqhf034hh183dn
+    platform_id: "Intel Cascade Lake"
+    core_fraction: 100
+    cores: 2
+    memory: 2
+    image_id: we84gsfg96bu54yt8fqht
+    disk_type: nvme
+    disk_size: 50
+    secondary_disks_spec:
+        - autodelete: true
+          description: disk1
+          type: nvme
+          size: 10
+        - autodelete: false
+          description: disk2
+          type: hdd
+          size: 100
+    subnet_id: r1kduv656k0nixi92a
+    assign_public_ip: true
+    preemptible: true
+    metadata:
+        user-data: "cloud init format in str"
+    state: present
+
+- name: Stop vm
+  ycc_vm:
+    token: {{ my_token }}
+    name: my_tyni_vm
+    operation: stop
+
+- name: Start vm
+  ycc_vm:
+    token: {{ my_token }}
+    name: my_tyni_vm
+    operation: start
